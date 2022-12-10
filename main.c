@@ -1,14 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "sh_account.h"
+
+AccountNode *head = NULL;
+int newacc_accnum; //계좌개설 시 필요한 계좌번호 할당 번호(누적됨) +프로그램 시작 시, 파일에서 읽어와서 초기화
 
 int main()
 {
     int menu;
     FILE *fp = NULL;
+    //data_acc.txt 읽어오고 오류 검사
+    printf("프로그램 시작\n");
     fp = fopen("data_acc.txt", "r+");
-    
-    file_read();
+    if(fp == NULL){
+        printf("Failed to open file %s\n", "data_acc.txt");
+        return -1;
+    }
+    printf("파일 읽기 시작\n");
+    file_read(fp);
+    printf("파일 읽기 성공\n");
     
     while (1)
     {
@@ -34,7 +42,7 @@ int main()
                 acc_delete();
                 break;
             case 6:
-                file_save();
+                file_save(fp);
                 exit(0);
         }
     }
