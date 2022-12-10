@@ -9,21 +9,27 @@ extern int newacc_accnum;
 void acc_open()
 {
     AccountNode* new_node;
-
-    new_node = (AccountNode*)malloc(sizeof(AccountNode));
-    if (new_node == NULL){
-            printf("동적 메모리 할당 오류\n");
-            exit(1);
+    char user[80];
+    
+    while(1){
+        printf("        =======계좌 개설=======      \n");
+        printf("메뉴로 돌아가려면 -1을 입력하세요.\n\n");
+        printf("예금주 이름: ");
+        scanf("%s", user);
+        if (!(strcmp(user, "-1"))) return; //입력이 -1이면 함수 종료
+        
+        new_node = (AccountNode*)malloc(sizeof(AccountNode));
+        if (new_node == NULL){
+                printf("동적 메모리 할당 오류\n");
+                exit(1);
+        }
+        //계좌번호 할당
+        new_node->accnum = ++newacc_accnum;
+        printf("입금액: ");
+        scanf("%ld", &new_node->balance);
+        listnode_add(new_node);
+        printf("%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
     }
-    printf("        =======계좌 개설=======      \n");
-    printf("예금주 이름: ");
-    scanf("%s", new_node->user);
-    //계좌번호 할당
-    new_node->accnum = ++newacc_accnum;
-    printf("입금액: ");
-    scanf("%ld", &new_node->balance);
-    listnode_add(new_node);
-    printf("%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
 }
 
 /*입금할 금액 입력
@@ -32,22 +38,54 @@ balance에 입금액 더하기*/
 void deposit()
 {
     int accnum;
-    
+    int money;
+    AccountNode *key_node, *deposit_node;
     printf("         =========입금========        \n");
-    printf("입금할 계좌의 계좌번호를 입력하세요.\n계좌번호(6숫자): ");
-    scanf("%d", &accnum);
-    
-    //keynode = accsearch(&new_node->accnum, ACC_SEARCH_NUM, int_comp)
+    while(1){
+        printf("메뉴로 돌아가려면 -1을 입력하세요.\n입금할 계좌의 계좌번호를 입력하세요.\n\n계좌번호(6숫자): ");
+        scanf("%d", &accnum);
+        if (accnum == -1) return; //입력이 -1이면 함수 종료
 
-        
-    
+        printf("입금할 금액을 입력하세요.\n입금액: ");
+        scanf("%d", &money);
+
+        deposit_node = accsearch(&accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+         //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
+        if (deposit_node == NULL){
+            printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
+            continue;
+        }
+        deposit_node->balance += money;
+    }
+
 }
 
 /*출금할 금액 입력
 balance에 출금액 빼기*/
 void withdraw()
 {
-    
+    int accnum;
+    int money;
+    AccountNode *key_node, *withdraw_node;
+
+    printf("         =========출금========        \n");
+    while(1)
+    {
+        printf("메뉴로 돌아가려면 -1을 입력하세요.\n출금할 계좌의 계좌번호를 입력하세요.\n\n계좌번호(6숫자): ");
+        scanf("%d", &accnum);
+        if (accnum == -1) return; //입력이 -1이면 함수 종료
+
+        printf("출금할 금액을 입력하세요.\n출금액: ");
+        scanf("%d", &money);
+
+        withdraw_node = accsearch(&accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+        //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
+        if (withdraw_node == NULL){
+            printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
+            continue;
+        }
+        withdraw_node->balance -= money;
+    }
 }
 
 /*정렬기준(예금주, 잔고내림차순) 선택하기
@@ -148,12 +186,12 @@ int file_save()
 
 //부가적 함수들
 
-/*리스트에서 acc_search_type(계좌번호, 잔고, 예금주)을 검색기준으로 key찾는 함수*/
+/*리스트에서 acc_search_type(계좌번호, 예금주)을 검색기준으로 key찾는 함수*/
 AccountNode* accsearch(void* key, int acc_search_type, int (*func)(void*, void*))//함수포인터 사용
 {
     AccountNode* tmp = tail->next;
     
-    //계좌번호, 잔고, 예금주로 나누어져서 경우마다 검색
+    //계좌번호, 예금주로 나누어져서 경우마다 검색
     if (acc_search_type == ACC_SEARCH_USER){
         while(1){
             if(func(tmp->user, key)){
@@ -167,6 +205,7 @@ AccountNode* accsearch(void* key, int acc_search_type, int (*func)(void*, void*)
         }
     }
     if (acc_search_type == ACC_SEARCH_NUM){
+        
         while(1){
             if(func(&tmp->accnum, key)){
                 return tmp;
@@ -177,7 +216,7 @@ AccountNode* accsearch(void* key, int acc_search_type, int (*func)(void*, void*)
             tmp = tmp->next;
         }
     }
-    if (acc_search_type == ACC_SEARCH_BALANCE){
+    /*if (acc_search_type == ACC_SEARCH_BALANCE){
         while(1){
             if(func(&tmp->balance, key)){
                 return tmp;
@@ -187,23 +226,17 @@ AccountNode* accsearch(void* key, int acc_search_type, int (*func)(void*, void*)
             }
             tmp = tmp->next;
         }
-    }
+    }*/
     else
         printf("search type error\n");
 }
-int int_comp(void* a, void* b)//계좌번호, 잔고
+int int_comp(void* a, void* b)//계좌번호
 {
-    int* a_p = (int*)a;
-    int* b_p = (int*)b; //a, b를 int형으로 형변환 왜 포인터를 형변환???
-
-    return a == b? 1 : 0;
+    return *((int*)a) == *((int*)b)? 1 : 0; //a, b를 int 포인터형으로 형변환 후, 값 비교
 }
 int str_comp(void* a, void* b)//예금주
 {
-    char* a_p = (char*)a;
-    char* b_p = (char*)b;
-
-    return !(strcmp(a, b));
+    return !(strcmp( (char*)a, (char*)b) ); //a, b를 char 포인터형으로 형변환 후, 비교
 }
 
 //연결리스트 노드 추가하는 함수
