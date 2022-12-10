@@ -111,11 +111,11 @@ void bal_check()
                 while(1){
                     printf("계좌번호(6숫자): ");
                     scanf("%d", &accnum);
-                    if (accnum == 3) return; //입력이 3이면 함수 종료
 
                     balcheck_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
                     //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
-                    if (balcheck_node = NULL)
+                    
+                    if (balcheck_node == NULL)
                     {
                         printf("입력하신 계좌번호는 존재하지 않습니다.\n다시 입력해주세요.\n");
                         continue;
