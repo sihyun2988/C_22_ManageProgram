@@ -15,8 +15,7 @@ void acc_open()
             printf("동적 메모리 할당 오류\n");
             exit(1);
     }
-
-    printf("=========계좌 개설=========\n");
+    printf("        =======계좌 개설=======      \n");
     printf("예금주 이름: ");
     scanf("%s", new_node->user);
     //계좌번호 할당
@@ -24,7 +23,7 @@ void acc_open()
     printf("입금액: ");
     scanf("%ld", &new_node->balance);
     listnode_add(new_node);
-    printf("%s 님의 계좌(%d)가 개설되었습니다. 잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
+    printf("%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
 }
 
 /*입금할 금액 입력
@@ -34,7 +33,7 @@ void deposit()
 {
     int accnum;
     
-    printf("==========입금==========\n");
+    printf("         =========입금========        \n");
     printf("입금할 계좌의 계좌번호를 입력하세요.\n계좌번호(6숫자): ");
     scanf("%d", &accnum);
     
@@ -68,32 +67,49 @@ void acc_delete()
 }
 
 /*프로그램 실행할 때, 파일 모든 내용 가져와서 연결리스트에 저장*/
-int file_read(FILE *fp)
+int file_read()
 {
     AccountNode* new_node;
-    
-    fscanf(fp, "%d", &newacc_accnum); //신규계좌번호 초기화
+    FILE *fp = NULL;
 
+    //data_acc.txt 읽어오고 오류 검사
+    fp = fopen("data_acc.txt", "rt");
+    if(fp == NULL){
+        printf("Failed to open file %s\n", "data_acc.txt");
+        return -1;
+    }
+
+    fscanf(fp, "%d", &newacc_accnum); //신규계좌번호 초기화
+    fgetc(fp);
     while(!feof(fp)){
         new_node = (AccountNode*)malloc(sizeof(AccountNode));
         if (new_node == NULL){
             printf("동적 메모리 할당 오류\n");
+            fclose(fp);
             exit(1);
         }
         //데이터파일 내 전체 계좌 정보 읽어와서 리스트에 저장
         fscanf(fp, "%s %d %ld", new_node->user, &new_node->accnum, &new_node->balance);
         listnode_add(new_node);
     }
+    fclose(fp);
     return 0;
 }
 
 /*연결리스트 돌면서
 파일에 저장하고
 할당한 노드 모두 해제*/
-void file_save(FILE *fp)
+int file_save()
 {
     AccountNode *tmp_node, *head;
-    rewind(fp);
+    FILE *fp = NULL;
+
+    fp = fopen("data_acc.txt", "wt");
+    if(fp == NULL){
+        printf("Failed to open file %s\n", "data_acc.txt");
+        return -1;
+    }
+
     fprintf(fp, "%d\n", newacc_accnum); //계좌번호 할당개수 파일에 출력
     if(tail != NULL)
     {    
@@ -101,16 +117,33 @@ void file_save(FILE *fp)
         tmp_node = head;
         while(1)
         {
-            if (head == tmp_node->next)
+            if (tmp_node->next == head)
             {
-                fprintf(fp, "%s %d %ld\n", tmp_node->user, tmp_node->accnum, tmp_node->balance);
+                fprintf(fp, "%s %d %ld", tmp_node->user, tmp_node->accnum, tmp_node->balance);
                 break;
             }
             fprintf(fp, "%s %d %ld\n", tmp_node->user, tmp_node->accnum, tmp_node->balance);
             tmp_node = tmp_node->next;
         }
     }
+    if(tail != NULL)
+    {    
+        head = tail->next;
+        tmp_node = head;
+        while(1)
+        {
+            if (tmp_node->next == head)
+            {
+                free(tmp_node);
+                break;
+            }
+            free(tmp_node);
+            tmp_node = tmp_node->next;
+        }
+    }    
+    
     fclose(fp);
+    return 0;
 }
 
 //부가적 함수들
@@ -178,7 +211,7 @@ void listnode_add(AccountNode* new_node)
 {
     AccountNode* next;
     
-    if (tail == NuLL){
+    if (tail == NULL){
         tail = new_node;
         new_node->next = tail;
     }
