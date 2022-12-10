@@ -16,11 +16,11 @@ typedef struct node{
 void acc_open();
 void deposit();
 void withdraw();
-void all_account();
+void bal_check();
 void acc_delete();
 int file_read();
 int file_save();
-AccountNode* accsearch(void* key, int acc_search_type, int (*func)());
+AccountNode* accsearch(AccountNode* start_node, void* key, int acc_search_type, int (*func)());
 int int_comp(void* a, void* b);
 int float_comp(void* a, void* b);
 int str_comp(void* a, void* b);

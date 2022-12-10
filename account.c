@@ -12,9 +12,9 @@ void acc_open()
     char user[80];
     
     while(1){
-        printf("        =======계좌 개설=======      \n");
+        printf("\n        =======계좌 개설=======      \n");
         printf("메뉴로 돌아가려면 -1을 입력하세요.\n\n");
-        printf("예금주 이름: ");
+        printf("예금주 이름(영문): ");
         scanf("%s", user);
         if (!(strcmp(user, "-1"))) return; //입력이 -1이면 함수 종료
         
@@ -40,8 +40,9 @@ void deposit()
     int accnum;
     int money;
     AccountNode *key_node, *deposit_node;
-    printf("         =========입금========        \n");
+    
     while(1){
+        printf("\n         =========입금========        \n");
         printf("메뉴로 돌아가려면 -1을 입력하세요.\n입금할 계좌의 계좌번호를 입력하세요.\n\n계좌번호(6숫자): ");
         scanf("%d", &accnum);
         if (accnum == -1) return; //입력이 -1이면 함수 종료
@@ -49,7 +50,7 @@ void deposit()
         printf("입금할 금액을 입력하세요.\n입금액: ");
         scanf("%d", &money);
 
-        deposit_node = accsearch(&accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+        deposit_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
          //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
         if (deposit_node == NULL){
             printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
@@ -68,9 +69,9 @@ void withdraw()
     int money;
     AccountNode *key_node, *withdraw_node;
 
-    printf("         =========출금========        \n");
     while(1)
     {
+        printf("\n         =========출금========        \n");
         printf("메뉴로 돌아가려면 -1을 입력하세요.\n출금할 계좌의 계좌번호를 입력하세요.\n\n계좌번호(6숫자): ");
         scanf("%d", &accnum);
         if (accnum == -1) return; //입력이 -1이면 함수 종료
@@ -78,7 +79,7 @@ void withdraw()
         printf("출금할 금액을 입력하세요.\n출금액: ");
         scanf("%d", &money);
 
-        withdraw_node = accsearch(&accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+        withdraw_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
         //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
         if (withdraw_node == NULL){
             printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
@@ -88,20 +89,60 @@ void withdraw()
     }
 }
 
-/*정렬기준(예금주, 잔고내림차순) 선택하기
-포인터만 빼와서 배열에서 정렬
-계좌번호 입력
-계좌잔고 출력*/
-void all_account()
+/*계좌번호로 입력받아서 검색 -> 잔고 조회하는 함수*/
+void bal_check()
 {
+    int menu;
+    int accnum;
+    char user[80];
+    int cnt = 0; //찾은 계좌 개수(한 예금주 당)
+    AccountNode *balcheck_node;
+    AccountNode *search_start;
     
+    while(1){
+        printf("\n       =======예금액 조회=======      \n");
+        printf("                [메뉴]                 \n");
+        printf("1. 예금주로 조회\n2. 계좌번호로 조회\n3. 이전메뉴로\n\n메뉴 선택: ");
+        scanf("%d", &menu);
+        switch(menu){
+            case 1://예금주 조회(한 예금주에 속한 모든 계좌 조회하도록)
+                break;
+            case 2:
+                while(1){
+                    printf("계좌번호(6숫자): ");
+                    scanf("%d", &accnum);
+                    if (accnum == 3) return; //입력이 3이면 함수 종료
+
+                    balcheck_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+                    //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
+                    if (balcheck_node = NULL)
+                    {
+                        printf("입력하신 계좌번호는 존재하지 않습니다.\n다시 입력해주세요.\n");
+                        continue;
+                    }
+                    else
+                    {
+                        printf("예금주\t계좌번호\t예금액\n");
+                        printf("%s\t%d\t%ld\n", balcheck_node->user, balcheck_node->accnum, balcheck_node->balance);
+                        break;
+                    }
+                }
+                break;
+            case 3:
+                return;
+            default:
+                printf("잘못된 메뉴 선택입니다.");
+                continue;
+        }
+        
+    }
 }
 
 /*삭제할 계좌번호 입력
 검색해서 한번더 삭제할지 확인하고 삭제하기*/
 void acc_delete()
 {
-    
+    return;
 }
 
 /*프로그램 실행할 때, 파일 모든 내용 가져와서 연결리스트에 저장*/
@@ -186,10 +227,11 @@ int file_save()
 
 //부가적 함수들
 
-/*리스트에서 acc_search_type(계좌번호, 예금주)을 검색기준으로 key찾는 함수*/
-AccountNode* accsearch(void* key, int acc_search_type, int (*func)(void*, void*))//함수포인터 사용
+/*리스트에서 acc_search_type(계좌번호, 예금주)을 검색기준으로 key찾는 함수
+start_node 매개변수 = 검색을 시작할 위치*/
+AccountNode* accsearch(AccountNode* start_node, void* key, int acc_search_type, int (*func)(void*, void*))//함수포인터 사용
 {
-    AccountNode* tmp = tail->next;
+    AccountNode* tmp = start_node;
     
     //계좌번호, 예금주로 나누어져서 경우마다 검색
     if (acc_search_type == ACC_SEARCH_USER){
