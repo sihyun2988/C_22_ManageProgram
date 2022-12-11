@@ -28,7 +28,7 @@ void acc_open()
         printf("입금액: ");
         scanf("%ld", &new_node->balance);
         listnode_add(new_node);
-        printf("%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
+        printf("\n%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
     }
 }
 
@@ -47,18 +47,28 @@ void deposit()
         scanf("%d", &accnum);
         if (accnum == -1) return; //입력이 -1이면 함수 종료
 
-        printf("입금할 금액을 입력하세요.\n입금액: ");
-        scanf("%d", &money);
-
         deposit_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
          //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
         if (deposit_node == NULL){
-            printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
+            printf("*입력하신 계좌번호는 존재하지 않는 번호입니다.*\n*다시 입력해주세요.*\n");
             continue;
         }
-        deposit_node->balance += money;
+        while(1){
+            printf("\n현재 잔고: %ld원\n", deposit_node->balance);
+            printf("입금할 금액을 입력하세요.\n입금액: ");
+            scanf("%d", &money);
+            
+            if(money < 0){
+                printf("입금액 입력 오류\n");
+                continue;
+            }
+            else{
+                deposit_node->balance += money;
+                printf("출금이 정상적으로 처리되었습니다.\n현재 잔고: %ld원\n", deposit_node->balance);
+                break;
+            }
+        }
     }
-
 }
 
 /*출금할 금액 입력
@@ -76,16 +86,30 @@ void withdraw()
         scanf("%d", &accnum);
         if (accnum == -1) return; //입력이 -1이면 함수 종료
 
-        printf("출금할 금액을 입력하세요.\n출금액: ");
-        scanf("%d", &money);
-
         withdraw_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
         //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
         if (withdraw_node == NULL){
-            printf("입력하신 계좌번호는 존재하지 않는 번호입니다.\n다시 입력해주세요.\n");
+            printf("*입력하신 계좌번호는 존재하지 않는 번호입니다.*\n*다시 입력해주세요.*\n");
             continue;
         }
-        withdraw_node->balance -= money;
+        while(1){
+            printf("\n현재 잔고: %ld원\n", withdraw_node->balance);
+            printf("출금할 금액을 입력하세요.\n출금액: ");
+            scanf("%d", &money);
+            if(money > withdraw_node->balance){
+                printf("*출금액이 예금액을 초과할 수 없습니다.*\n");
+                continue;
+            }
+            else if(money < 0){
+                printf("출금액 입력 오류\n");
+                continue;
+            }
+            else{
+                withdraw_node->balance -= money;
+                printf("출금이 정상적으로 처리되었습니다.\n현재 잔고: %ld원\n", withdraw_node->balance);
+                break;
+            }
+        }        
     }
 }
 
@@ -114,16 +138,15 @@ void bal_check()
 
                     balcheck_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
                     //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
-                    
                     if (balcheck_node == NULL)
                     {
-                        printf("입력하신 계좌번호는 존재하지 않습니다.\n다시 입력해주세요.\n");
+                        printf("*입력하신 계좌번호는 존재하지 않습니다.*\n*다시 입력해주세요.*\n");
                         continue;
                     }
                     else
                     {
-                        printf("예금주\t계좌번호\t예금액\n");
-                        printf("%s\t%d\t%ld\n", balcheck_node->user, balcheck_node->accnum, balcheck_node->balance);
+                        printf("\n\n예금주    계좌번호   예금액\n");
+                        printf("%s    %d    %ld원\n", balcheck_node->user, balcheck_node->accnum, balcheck_node->balance);
                         break;
                     }
                 }
@@ -131,7 +154,7 @@ void bal_check()
             case 3:
                 return;
             default:
-                printf("잘못된 메뉴 선택입니다.");
+                printf("*잘못된 메뉴 선택입니다.*");
                 continue;
         }
         
