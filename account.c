@@ -23,6 +23,7 @@ void acc_open()
                 printf("동적 메모리 할당 오류\n");
                 exit(1);
         }
+        strcpy(new_node->user, user);
         //계좌번호 할당
         new_node->accnum = ++newacc_accnum;
         printf("입금액: ");
@@ -182,7 +183,6 @@ int file_read()
     }
 
     fscanf(fp, "%d", &newacc_accnum); //신규계좌번호 초기화
-    fgetc(fp);
     while(!feof(fp)){
         new_node = (AccountNode*)malloc(sizeof(AccountNode));
         if (new_node == NULL){
@@ -263,8 +263,11 @@ AccountNode* accsearch(AccountNode* start_node, void* key, int acc_search_type, 
                 return tmp; //key 찾으면 해당 주소값 반환
             }
             //tmp->next(현재 검사하는 노드의 next), tail->next(원형연결리스트라서 맨처음 노드를 가리킴)
-            if((tmp->next == tail->next)){ 
+            else
+            {
+                if((tmp == tail)){ 
                 return NULL; //key 못 찾고 리스트 마지막 노드까지 가면 NULL 반환
+                }
             }
             tmp = tmp->next;
         }
@@ -275,7 +278,7 @@ AccountNode* accsearch(AccountNode* start_node, void* key, int acc_search_type, 
             if(func(&tmp->accnum, key)){
                 return tmp;
             }
-            if((tmp->next == tail->next)){ 
+            if((tmp == tail)){ 
                 return NULL;
             }
             tmp = tmp->next;
@@ -286,7 +289,7 @@ AccountNode* accsearch(AccountNode* start_node, void* key, int acc_search_type, 
             if(func(&tmp->balance, key)){
                 return tmp;
             }
-            if((tmp->next == tail->next)){ 
+            if((tmp == tail)){ 
                 return NULL;
             }
             tmp = tmp->next;
