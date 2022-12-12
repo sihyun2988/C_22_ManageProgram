@@ -28,6 +28,10 @@ void acc_open()
         new_node->accnum = ++newacc_accnum;
         printf("입금액: ");
         scanf("%ld", &new_node->balance);
+        if(new_node->balance < 0){
+                printf("입금액 입력 오류\n");
+                continue;
+        }
         listnode_add(new_node);
         printf("\n%s 님의 계좌가 개설되었습니다.\n계좌번호: %d\n잔고: %ld\n", new_node->user, new_node->accnum, new_node->balance);
     }
@@ -164,8 +168,8 @@ void bal_check()
                         }
                         else //앞에서도 한번도 찾지 못한 경우
                         {
-                            printf("%s 님의 계좌는 총 %d건입니다.", user, cnt);
-                            printf("%s 님의 계좌를 찾지 못했습니다.", user\n);
+                            printf("%s 님의 계좌는 총 %d건입니다.\n", user, cnt);
+                            printf("%s 님의 계좌를 찾지 못했습니다.\n", user);
                         }
                         break;
                     }
@@ -195,8 +199,10 @@ void bal_check()
                 return;
             default:
                 printf("\n*잘못된 메뉴 선택입니다.*\n");
-                getchar();
-                getchar();
+                do{
+                    getchar();
+                }
+                while (getchar() != '\n');
         }
         
     }
