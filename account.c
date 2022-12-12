@@ -3,7 +3,7 @@
 extern AccountNode *tail;
 extern int newacc_accnum;
 
-/*입력: 계좌주 이름
+ /*입력: 계좌주 이름
 (랜덤, 겹치는 번호있는지 확인)계좌번호 생성
 계좌 개수 추가*/
 void acc_open()
@@ -12,7 +12,7 @@ void acc_open()
     char user[80];
     
     while(1){
-        printf("\n        =======계좌 개설=======      \n");
+        printf("\n      =======계좌 개설=======      \n");
         printf("메뉴로 돌아가려면 -1을 입력하세요.\n\n");
         printf("예금주 이름(영문): ");
         scanf("%s", user);
@@ -44,7 +44,7 @@ void deposit()
 {
     int accnum;
     int money;
-    AccountNode *key_node, *deposit_node;
+    AccountNode *deposit_node;
     
     while(1){
         printf("\n         =========입금========        \n");
@@ -82,7 +82,7 @@ void withdraw()
 {
     int accnum;
     int money;
-    AccountNode *key_node, *withdraw_node;
+    AccountNode *withdraw_node;
 
     while(1)
     {
@@ -206,6 +206,45 @@ void bal_check()
         }
     }
 }
+
+/*삭제할 계좌번호 입력
+검색해서 한번더 삭제할지 확인하고 삭제하기*/
+void acc_delete()
+{
+    int accnum;
+    char yesno[40];
+    AccountNode *delete_node;
+
+    while(1)
+    {
+        printf("\n         =========계좌 삭제========        \n");
+        printf("메뉴로 돌아가려면 -1을 입력하세요.\n삭제할 계좌의 계좌번호를 입력하세요.\n\n계좌번호(6숫자): ");
+        scanf("%d", &accnum);
+        if (accnum == -1) return; //입력이 -1이면 함수 종료
+        delete_node = accsearch(tail->next, &accnum, ACC_SEARCH_NUM, int_comp); //accsearch함수로 반환된 tmp를 keynode에 저장
+        //변경할 노드주소값이 NULL이면 다음 반복으로 넘어감
+        if (delete_node == NULL){
+                printf("*입력하신 계좌번호는 존재하지 않는 번호입니다.*\n*다시 입력해주세요.*\n");
+                continue;
+        }
+        else{
+            printf("정말 이 계좌를 삭제하시겠습니까? (Y/N)\n");
+            scanf("%s", yesno);
+            if(!strcmp(yesno, "Y"))
+            {
+                listnode_delete(delete_node); //노드 삭제
+                printf("\n삭제가 정상적으로 처리되었습니다.\n");
+                break;
+            }
+            else if(!strcmp(yesno, "N")){
+                printf("\n취소되었습니다.\n");
+                continue;
+            }
+            else printf("(Y/N) 중에 입력해주세요.\n");
+        }
+    }
+}        
+
 
 
 /*프로그램 실행할 때, 파일 모든 내용 가져와서 연결리스트에 저장*/
@@ -360,4 +399,27 @@ void listnode_add(AccountNode* new_node)
         tail->next = new_node;
         tail = new_node;
     }
+}
+
+void listnode_delete(AccountNode *delete_node)
+{
+    AccountNode *pre_node;
+    //공백 리스트라면 삭제할 것이 없으므로 실행 종료
+    if (tail->next == NULL) return;
+    //리스트에 노드가 하나뿐이라면 노드를 삭제하고 리스트 head의 포인터를 비웁니다.
+    if (tail->next->next == NULL){
+        free(tail->next);
+        tail->next = NULL;
+        return;
+    }
+    //삭제하기(pre를 head부터 돌려서 삭제할노드 바로 전 노드로 설정)
+    else{
+        pre_node = tail->next;
+        while(pre_node->next != delete_node){
+            pre_node = pre_node->next;
+        }
+        pre_node->next = delete_node->next; // 삭제할노드 앞뒤 노드 연결
+        free(delete_node); //드디어 삭제
+    }
+
 }

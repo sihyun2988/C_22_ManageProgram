@@ -25,3 +25,4 @@ int int_comp(void* a, void* b);
 int float_comp(void* a, void* b);
 int str_comp(void* a, void* b);
 void listnode_add(AccountNode* new_node);
+void listnode_delete(AccountNode *delete_node);

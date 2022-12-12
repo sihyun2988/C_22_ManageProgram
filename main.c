@@ -14,7 +14,7 @@ int main()
     {
         printf("======================================\n");
         printf("                [메뉴]                 \n");
-        printf("1.계좌 개설\t2.입금\t 3.출금\n4.잔고 조회\t5.종료\n");
+        printf("1.계좌 개설\t2.입금\t 3.출금\n4.잔고 조회\t5.계좌 삭제\t6.종료\n");
         printf("======================================\n");
         printf("메뉴 선택: ");
         scanf("%d", &menu);
@@ -33,6 +33,9 @@ int main()
                 bal_check();
                 break;
             case 5:
+                acc_delete();
+                break;
+            case 6:
                 file_save();
                 exit(0);
             default:
