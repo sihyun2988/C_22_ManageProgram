@@ -204,7 +204,6 @@ void bal_check()
                 }
                 while (getchar() != '\n');
         }
-        
     }
 }
 
