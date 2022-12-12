@@ -3,7 +3,7 @@
 extern AccountNode *tail;
 extern int newacc_accnum;
 
- /*입력: 계좌주 이름
+/*입력: 계좌주 이름
 (랜덤, 겹치는 번호있는지 확인)계좌번호 생성
 계좌 개수 추가*/
 void acc_open()
@@ -207,12 +207,6 @@ void bal_check()
     }
 }
 
-/*삭제할 계좌번호 입력
-검색해서 한번더 삭제할지 확인하고 삭제하기*/
-void acc_delete()
-{
-    return;
-}
 
 /*프로그램 실행할 때, 파일 모든 내용 가져와서 연결리스트에 저장*/
 int file_read()
