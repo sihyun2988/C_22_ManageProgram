@@ -131,6 +131,45 @@ void bal_check()
         scanf("%d", &menu);
         switch(menu){
             case 1://예금주 조회(한 예금주에 속한 모든 계좌 조회하도록)
+                printf("예금주(영문): ");
+                scanf("%s", user);
+                printf("\n\n예금주    계좌번호   예금액\n");
+
+                search_start = tail->next;
+                while(1){
+                    balcheck_node = accsearch(search_start, user, ACC_SEARCH_USER, int_comp);
+                    
+                    if (balcheck_node != NULL) //예금주의 계좌 노드를 찾은 경우
+                    {
+                        printf("%s    %d    %ld원\n", balcheck_node->user, balcheck_node->accnum, balcheck_node->balance);
+                        cnt++;
+                        if (balcheck_node == tail) //끝에서 찾은 경우
+                        {
+                            printf("%s 님의 계좌는 총 %d건입니다.", user, cnt);
+                            break;
+
+                        }
+                        else //중간에서 찾은 경우
+                        {
+                            search_start = balcheck_node->next; //다음 반복에서 찾기 시작할 위치를 설정
+                            continue;
+                        }
+                    }
+                    
+                    else //예금주의 계좌 노드가 더이상 없는 경우
+                    {
+                        if(cnt > 0) //앞에서 찾은 경우
+                        {
+                            printf("%s 님의 계좌는 총 %d건입니다.", user, cnt);
+                        }
+                        else //앞에서도 한번도 찾지 못한 경우
+                        {
+                            printf("%s 님의 계좌는 총 %d건입니다.", user, cnt);
+                            printf("%s 님의 계좌를 찾지 못했습니다.", user\n);
+                        }
+                        break;
+                    }
+                }
                 break;
             case 2:
                 while(1){
@@ -155,8 +194,9 @@ void bal_check()
             case 3:
                 return;
             default:
-                printf("*잘못된 메뉴 선택입니다.*");
-                continue;
+                printf("\n*잘못된 메뉴 선택입니다.*\n");
+                getchar();
+                getchar();
         }
         
     }
